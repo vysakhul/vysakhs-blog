@@ -20,9 +20,13 @@ Bootstrap(app)
 # post comment images
 gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False, base_url=None)
 
+DB_URL = "postgresql://blogs_433u_user:9ixq0ayXYJQTOfHqVG1mI1dm1it1dX5I@dpg-cg9lpp4eooghng1ku300-a.singapore-postgres.render.com/blogs_433u"
 
 ##CONNECT TO DB
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
+
+# postgres://blogs_433u_user:9ixq0ayXYJQTOfHqVG1mI1dm1it1dX5I@dpg-cg9lpp4eooghng1ku300-a.singapore-postgres.render.com/blogs_433u
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
