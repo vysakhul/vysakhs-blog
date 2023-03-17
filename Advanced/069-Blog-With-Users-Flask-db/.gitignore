@@ -8,6 +8,7 @@ instance/*
 .env
 org_files/
 instance/
+environment.env
 
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files
