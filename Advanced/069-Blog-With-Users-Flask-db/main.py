@@ -1,6 +1,8 @@
 import os
 import smtplib
-from flask import Flask, render_template, redirect, url_for, flash, abort, request
+import ssl
+from email.message import EmailMessage
+from flask import Flask, render_template, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -8,7 +10,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import CreatePostForm
 from flask_gravatar import Gravatar
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, ContactForm
 from functools import wraps
@@ -200,15 +201,28 @@ def about():
 def contact():
     form = ContactForm()
     if form.validate_on_submit():
-        with smtplib.SMTP("smtp.gmail.com") as connection:
-            connection.starttls()
+        email_sender = myemail
+        email_password = mypass
+        email_receiver = 'vysakhul@gmail.com'
+
+        # Set the subject and body of the email
+        subject = f'Blog message from {form.name.data}'
+        body = f"Hi,\n\n{form.message.data}\n\nContact details: {form.email.data},{form.phone.data}"
+
+        em = EmailMessage()
+        em['From'] = email_sender
+        em['To'] = email_receiver
+        em['Subject'] = subject
+        em.set_content(body)
+
+        # Add SSL (layer of security)
+        context = ssl.create_default_context()
+
+        # Log in and send the email
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
             try:
-                connection.login(user=myemail, password=mypass)
-                connection.sendmail(from_addr=myemail,
-                                    to_addrs="vysakhul@gmail.com",
-                                    msg=f"Subject:Blog mail from {form.name.data}\n\nHi,"
-                                        f"\n\nMessage: {form.message.data}\n\n"
-                                        f"Contact details: {form.email.data}, {form.phone.data}")
+                smtp.login(email_sender, email_password)
+                smtp.sendmail(email_sender, email_receiver, em.as_string())
                 flash("::: Message sent successfully :::")
             except Exception:
                 flash("Oops looks like something went wrong, please send mail to vysakhul@gmail.com")
