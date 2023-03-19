@@ -25,8 +25,8 @@ body {
 .middle-container h3 {
     font-family: 'Montserrat', sans-serif;
     color: #11999E;
+    font-size: 1.3rem;
 }
-
 
 
 .middle-container {
@@ -34,14 +34,22 @@ body {
     text-align: center;
 }
 
+
 .dp {
-    width: 15%;
+    width: 25%;
 }
 
 .skill-row {
-    width: 80%;
+    width: 100%;
     margin: 100px auto 100px auto;  /*  top right bottom left  */
     text-align: left;
+
+}
+
+.skill-row ul {
+    columns: 3;
+    -webkit-columns: 3;
+    -moz-columns: 3;
 }
 
 .python {
@@ -56,11 +64,17 @@ body {
     margin-left: 30px;
 }
 
+.selenium {
+    width: 20%;
+    float: left;
+    margin-right: 30px;
+}
+
 hr {
     width: 5%;
     border-style: none;
     border-top-style: dotted;
     border-width: 8px;
     border-color: #EAF6F6;
-    margin: 100px auto;
+    margin: 50px auto;
 }
