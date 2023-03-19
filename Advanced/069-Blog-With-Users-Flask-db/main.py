@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, redirect, url_for, flash, abort
+import smtplib
+from flask import Flask, render_template, redirect, url_for, flash, abort, request
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -9,7 +10,7 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import CreatePostForm
 from flask_gravatar import Gravatar
-from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
+from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, ContactForm
 from functools import wraps
 
 
@@ -21,6 +22,10 @@ Bootstrap(app)
 # post comment images
 gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False,
                     use_ssl=False, base_url=None)
+
+myemail = os.environ.get('MY_EMAIL')
+mypass = os.environ.get('MY_PASS')
+
 
 ##CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -191,9 +196,24 @@ def about():
     return render_template("about.html", logged_in=current_user.is_authenticated)
 
 
-@app.route("/contact")
+@app.route("/contact", methods=['GET', 'POST'])
 def contact():
-    return render_template("contact.html", logged_in=current_user.is_authenticated)
+    form = ContactForm()
+    if form.validate_on_submit():
+        with smtplib.SMTP("smtp.gmail.com") as connection:
+            connection.starttls()
+            try:
+                connection.login(user=myemail, password=mypass)
+                connection.sendmail(from_addr=myemail,
+                                    to_addrs="vysakhul@gmail.com",
+                                    msg=f"Subject:Blog mail from {form.name.data}\n\nHi,"
+                                        f"\n\nMessage: {form.message.data}\n\n"
+                                        f"Contact details: {form.email.data}, {form.phone.data}")
+                flash("::: Message sent successfully :::")
+            except Exception:
+                flash("Oops looks like something went wrong, please send mail to vysakhul@gmail.com")
+
+    return render_template("contact.html", logged_in=current_user.is_authenticated, form=form)
 
 
 @app.route("/new-post", methods=['GET', 'POST'])
